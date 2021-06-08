@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Shunt
-  description: OAuth for Docker
+  description: OAuth v2 for Docker and traefik
   license: "license (BSD, MIT)"
   min_ansible_version: 2.9
   platforms:
@@ -17,5 +17,6 @@ galaxy_info:
   galaxy_tags:
     - docker
     - oauth
+    - traefik
 
 dependencies: []
