@@ -1,4 +1,9 @@
 ---
+- name: Remove oauth.toml file from Traefik
+  ansible.builtin.file:
+    path: "{{ traefik_data_dir }}/rules/oauth.toml"
+    state: absent
+
 - name: Stop "{{ oauth_name }}" container
   community.docker.docker_container:
     name: "{{ oauth_name }}"

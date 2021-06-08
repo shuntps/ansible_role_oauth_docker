@@ -1,5 +1,5 @@
 ---
-- name: Adding oauth.toml file to Traefik
+- name: Adding oauth.toml file from Traefik
   ansible.builtin.template:
     src: oauth.toml.j2
     dest: "{{ traefik_data_dir }}/rules/oauth.toml"
