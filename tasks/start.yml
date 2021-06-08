@@ -1,0 +1,41 @@
+---
+- name: Adding oauth.toml file to Traefik
+  ansible.builtin.template:
+    src: oauth.toml.j2
+    dest: "{{ traefik_data_dir }}/rules/oauth.toml"
+
+- name: Start "{{ oauth_name }}" container
+  community.docker.docker_container:
+    name: "{{ oauth_name }}"
+    image: "thomseddon/traefik-forward-auth:{{ oauth_version }}"
+    restart_policy: "{{ oauth_restart_policy }}"
+    recreate: "{{ oauth_recreate }}"
+    pull: "true"
+    env:
+      PROVIDERS_GOOGLE_CLIENT_ID: "{{ oauth_google_client_id }}"
+      PROVIDERS_GOOGLE_CLIENT_SECRET: "{{ oauth_google_client_secret }}"
+      SECRET: "{{ oauth_secret }}"
+      INSECURE_COOKIE: "{{ oauth_insecure_cookie }}"
+      COOKIE_DOMAIN: "{{ oauth_domain }}"
+      AUTH_HOST: "oauth.{{ oauth_domain }}"
+      URL_PATH: /_oauth
+      WHITELIST: "{{ oauth_whitelist }}"
+      LOG_LEVEL: "{{ oauth_log_level }}"
+      LOG_FORMAT: "{{ oauth_log_format }}"
+      LIFETIME: "{{ oauth_lifetime }}"
+      DEFAULT_ACTION: auth
+      DEFAULT_PROVIDER: google
+    networks:
+      - name: "{{ oauth_network_mode }}"
+    purge_networks: "yes"
+    networks_cli_compatible: "yes"
+    labels:
+      traefik.enable: "{{ oauth_available_externally }}"
+      ## HTTP Routers
+      traefik.http.routers.oauth-rtr.entrypoints: "https"
+      traefik.http.routers.oauth-rtr.rule: "Host(`oauth.{{ oauth_domain }}`)"
+      ## Middlewares
+      traefik.http.routers.oauth-rtr.middlewares: "chain-oauth@file"
+      ## HTTP Services
+      traefik.http.routers.oauth-rtr.service: "oauth-svc"
+      traefik.http.services.oauth-svc.loadbalancer.server.port: "{{ oauth_svc_port }}"

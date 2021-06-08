@@ -1,0 +1,5 @@
+[http.middlewares]
+  [http.middlewares.oauth.forwardAuth]
+    address = "http://oauth:{{ oauth_svc_port }}"
+    trustForwardHeader = true
+    authResponseHeaders = ["X-Forwarded-User"]

@@ -1,0 +1,5 @@
+---
+- name: Stop "{{ oauth_name }}" container
+  community.docker.docker_container:
+    name: "{{ oauth_name }}"
+    state: absent
